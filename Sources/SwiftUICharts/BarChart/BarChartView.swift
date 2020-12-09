@@ -18,7 +18,7 @@ public struct BarChartView : View {
     public var formSize:CGSize
     public var dropShadow: Bool
     public var cornerImage: Image
-    public var valueSpecifier:String
+    public var valueSpecifier:String = "%.1f"
     
     @State private var touchLocation: CGFloat = -1.0
     @State private var showValue: Bool = false
@@ -53,15 +53,9 @@ public struct BarChartView : View {
                 .shadow(color: self.style.dropShadowColor, radius: self.dropShadow ? 8 : 0)
             VStack(alignment: .leading){
                 HStack{
-                    if(!showValue){
-                        Text(self.title)
-                            .font(.headline)
-                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
-                    }else{
-                        Text("\(self.currentValue, specifier: self.valueSpecifier)")
-                            .font(.headline)
-                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
-                    }
+                   
+                    addTitleText()
+                    
                     if(self.formSize == ChartForm.large && self.legend != nil && !showValue) {
                         Text(self.legend!)
                             .font(.callout)
@@ -129,10 +123,36 @@ public struct BarChartView : View {
         return min(self.formSize.width-110,max(10,(self.touchLocation * self.formSize.width) - 50))
     }
     
-    func getCurrentValue() -> (String,Double)? {
+    func getCurrentValue() -> (String,Double,String)? {
         guard self.data.points.count > 0 else { return nil}
         let index = max(0,min(self.data.points.count-1,Int(floor((self.touchLocation*self.formSize.width)/(self.formSize.width/CGFloat(self.data.points.count))))))
         return self.data.points[index]
+    }
+    
+    private func hasThirdValue () -> Bool {
+        return !getThirdValue().isEmpty
+    }
+    
+    private func getThirdValue () -> String {
+        return self.getCurrentValue()?.2 ?? ""
+    }
+    
+    private func addTitleText () -> Text {
+        if (!showValue) {
+            return Text(self.title)
+                .font(.headline)
+                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+        
+        } else if (hasThirdValue()) {
+            return Text(getThirdValue())
+                .font(.headline)
+                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+        
+        } else {
+            return Text("\(self.currentValue, specifier: self.valueSpecifier)")
+                .font(.headline)
+                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+        }
     }
 }
 

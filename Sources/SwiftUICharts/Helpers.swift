@@ -184,27 +184,32 @@ public class ChartStyle {
 }
 
 public class ChartData: ObservableObject, Identifiable {
-    @Published var points: [(String,Double)]
+    @Published var points: [(String,Double,String)]
     var valuesGiven: Bool = false
     var ID = UUID()
     
     public init<N: BinaryFloatingPoint>(points:[N]) {
-        self.points = points.map{("", Double($0))}
+        self.points = points.map{("", Double($0), "")}
     }
     public init<N: BinaryInteger>(values:[(String,N)]){
-        self.points = values.map{($0.0, Double($0.1))}
+        self.points = values.map{($0.0, Double($0.1), "")}
         self.valuesGiven = true
     }
     public init<N: BinaryFloatingPoint>(values:[(String,N)]){
-        self.points = values.map{($0.0, Double($0.1))}
+        self.points = values.map{($0.0, Double($0.1), "")}
         self.valuesGiven = true
     }
     public init<N: BinaryInteger>(numberValues:[(N,N)]){
-        self.points = numberValues.map{(String($0.0), Double($0.1))}
+        self.points = numberValues.map{(String($0.0), Double($0.1), "")}
         self.valuesGiven = true
     }
     public init<N: BinaryFloatingPoint & LosslessStringConvertible>(numberValues:[(N,N)]){
-        self.points = numberValues.map{(String($0.0), Double($0.1))}
+        self.points = numberValues.map{(String($0.0), Double($0.1), "")}
+        self.valuesGiven = true
+    }
+    
+    public init<N: BinaryFloatingPoint & LosslessStringConvertible>(numberValues:[(String,N,String)]){
+        self.points = numberValues.map{(String($0.0), Double($0.1), String($0.2))}
         self.valuesGiven = true
     }
     
@@ -240,6 +245,11 @@ public class TestData{
                                                             ("2018 Q3",55840),
                                                             ("2018 Q4",63150), ("2019 Q1",50900), ("2019 Q2",77550), ("2019 Q3",79600), ("2019 Q4",92550)])
     
+    static public var valuesExtended: ChartData = ChartData(numberValues: [("January", 54, "5h and 5 minutes"),
+                                                                           ("February", 34, "5 days"),
+                                                                           ("March", 23, "6 days"),
+                                                                           ("April", 54, "10 days"),
+                                                                           ("May", 55, "5 days and 6 hours")])
 }
 
 extension Color {
